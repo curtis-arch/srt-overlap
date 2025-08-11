@@ -136,7 +136,7 @@ The house of SaaS.`)
   return (
     <div className="h-screen w-full bg-gray-50">
       <div className="h-full p-4">
-        <div className="text-center mb-4">
+        <div className="text-center mb-4 flex-shrink-0">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">SRT Overlap Checker</h1>
           <p className="text-sm text-gray-600">Paste your SRT content to check for timing overlaps</p>
         </div>
@@ -145,7 +145,7 @@ The house of SaaS.`)
           {/* Left Panel - SRT Input */}
           <ResizablePanel defaultSize={50} minSize={30}>
             <div className="h-full flex flex-col bg-white">
-              <div className="p-4 border-b">
+              <div className="p-4 border-b flex-shrink-0">
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="text-lg font-semibold flex items-center gap-2">
                     <Upload className="h-4 w-4" />
@@ -157,7 +157,7 @@ The house of SaaS.`)
                 </div>
                 <p className="text-sm text-gray-600">Paste your SRT subtitle file content below</p>
               </div>
-              <div className="flex-1 p-4">
+              <div className="flex-1 p-4 overflow-hidden">
                 <Textarea
                   placeholder="Paste your SRT content here..."
                   value={srtContent}
@@ -173,7 +173,7 @@ The house of SaaS.`)
           {/* Right Panel - Results */}
           <ResizablePanel defaultSize={50} minSize={30}>
             <div className="h-full flex flex-col bg-white">
-              <div className="p-4 border-b">
+              <div className="p-4 border-b flex-shrink-0">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
                   {overlaps.length > 0 ? (
                     <AlertTriangle className="h-4 w-4 text-red-500" />
@@ -197,62 +197,64 @@ The house of SaaS.`)
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4">
-                {!isAnalyzed ? (
-                  <div className="flex items-center justify-center h-full text-gray-500">
-                    Click "Analyze SRT" to check for overlaps
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {overlaps.length > 0 && (
-                      <Alert className="border-red-200 bg-red-50">
-                        <AlertTriangle className="h-4 w-4 text-red-500" />
-                        <AlertDescription className="text-red-700">
-                          Found {overlaps.length} timing overlap{overlaps.length !== 1 ? "s" : ""}. Check the
-                          highlighted segments below.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-
-                    <div className="space-y-2">
-                      {segments.map((segment) => (
-                        <div
-                          key={segment.index}
-                          className={`p-3 rounded-lg border ${
-                            isOverlapping(segment.index) ? "border-red-300 bg-red-50" : "border-gray-200 bg-white"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-semibold text-sm">#{segment.index}</span>
-                            <span className="text-xs font-mono text-gray-600">
-                              {segment.startTimeString} → {segment.endTimeString}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-800">{segment.text}</p>
-                          {isOverlapping(segment.index) && (
-                            <div className="mt-2">
-                              {overlaps
-                                .filter(
-                                  (overlap) =>
-                                    overlap.segmentIndex === segment.index ||
-                                    overlap.nextSegmentIndex === segment.index,
-                                )
-                                .map((overlap, idx) => (
-                                  <Badge key={idx} variant="destructive" className="text-xs">
-                                    Overlap: {formatDuration(overlap.overlapDuration)}
-                                    with #
-                                    {overlap.segmentIndex === segment.index
-                                      ? overlap.nextSegmentIndex
-                                      : overlap.segmentIndex}
-                                  </Badge>
-                                ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+              <div className="flex-1 overflow-hidden">
+                <div className="h-full overflow-y-auto p-4">
+                  {!isAnalyzed ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      Click "Analyze SRT" to check for overlaps
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="space-y-4">
+                      {overlaps.length > 0 && (
+                        <Alert className="border-red-200 bg-red-50">
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                          <AlertDescription className="text-red-700">
+                            Found {overlaps.length} timing overlap{overlaps.length !== 1 ? "s" : ""}. Check the
+                            highlighted segments below.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      <div className="space-y-2">
+                        {segments.map((segment) => (
+                          <div
+                            key={segment.index}
+                            className={`p-3 rounded-lg border ${
+                              isOverlapping(segment.index) ? "border-red-300 bg-red-50" : "border-gray-200 bg-white"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-semibold text-sm">#{segment.index}</span>
+                              <span className="text-xs font-mono text-gray-600">
+                                {segment.startTimeString} → {segment.endTimeString}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-800">{segment.text}</p>
+                            {isOverlapping(segment.index) && (
+                              <div className="mt-2">
+                                {overlaps
+                                  .filter(
+                                    (overlap) =>
+                                      overlap.segmentIndex === segment.index ||
+                                      overlap.nextSegmentIndex === segment.index,
+                                  )
+                                  .map((overlap, idx) => (
+                                    <Badge key={idx} variant="destructive" className="text-xs">
+                                      Overlap: {formatDuration(overlap.overlapDuration)}
+                                      with #
+                                      {overlap.segmentIndex === segment.index
+                                        ? overlap.nextSegmentIndex
+                                        : overlap.segmentIndex}
+                                    </Badge>
+                                  ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </ResizablePanel>
